@@ -8,8 +8,6 @@ import { ChangeEvent, useMemo, useState } from "react";
 export function VideoInputForm() {
   const [videoFile, setVideoFile] = useState<File | null>(null);
 
-  console.log(videoFile);
-
   function handleFileSelected(event: ChangeEvent<HTMLInputElement>) {
     const { files } = event.currentTarget;
 
@@ -28,19 +26,17 @@ export function VideoInputForm() {
     return URL.createObjectURL(videoFile);
   }, [videoFile]);
 
-  console.log(previewUrl);
-
   return (
     <form className="space-y-6">
       <label
         htmlFor="video"
-        className="aspect-video border border-dashed rounded-sm flex flex-col items-center justify-center gap-2 hover:bg-primary/5 text-sm text-muted-foreground cursor-pointer relative"
+        className="aspect-video border border-dashed rounded-sm flex flex-col items-center justify-center gap-2 hover:bg-primary/5 text-sm text-muted-foreground cursor-pointer relative overflow-hidden"
       >
         {previewUrl ? (
           <video
             src={previewUrl}
-            // controls={false}
-            className="absolute inset-0"
+            controls={false}
+            className="pointer-events-none absolute inset-0"
           />
         ) : (
           <>
