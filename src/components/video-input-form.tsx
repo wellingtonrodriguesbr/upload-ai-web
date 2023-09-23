@@ -6,9 +6,20 @@ import { Button } from "./ui/button";
 import { ChangeEvent, FormEvent, useMemo, useRef, useState } from "react";
 import { getFFmpeg } from "@/lib/ffmpeg";
 import { fetchFile } from "@ffmpeg/util";
+import { api } from "@/lib/axios";
+
+type Status = "waiting" | "converting" | "uploading" | "generating" | "success";
+
+const statusMessages = {
+  converting: "Convertendo...",
+  generating: "Transcrevendo...",
+  uploading: "Carregando...",
+  success: "Sucesso!",
+};
 
 export function VideoInputForm() {
   const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [status, setStatus] = useState<Status>("waiting");
   const promptInputRef = useRef<HTMLTextAreaElement>(null);
 
   function handleFileSelected(event: ChangeEvent<HTMLInputElement>) {
@@ -51,6 +62,9 @@ export function VideoInputForm() {
     const data = await ffmpeg.readFile("output.mp3");
 
     const audioFileBlob = new Blob([data], { type: "audio/mp3" });
+
+    setStatus("converting");
+
     const audioFile = new File([audioFileBlob], "output.mp3", {
       type: "audio/mpeg",
     });
@@ -67,8 +81,30 @@ export function VideoInputForm() {
 
     if (!videoFile) return;
 
+    setStatus("converting");
+
     const audioFile = await convertVideoToAudio(videoFile);
-    console.log(audioFile);
+    const data = new FormData();
+
+    data.append("file", audioFile);
+
+    setStatus("uploading");
+
+    const {
+      data: {
+        video: { id: videoId },
+      },
+    } = await api.post("/videos", data);
+
+    setStatus("generating");
+
+    await api.post(`/videos/${videoId}/transcription`, { prompt });
+
+    setStatus("success");
+
+    setTimeout(() => {
+      setStatus("waiting");
+    }, 2000);
   }
 
   const previewUrl = useMemo(() => {
@@ -110,14 +146,26 @@ export function VideoInputForm() {
         <Label htmlFor="transcription_prompt">Prompt de transcrição</Label>
         <Textarea
           ref={promptInputRef}
+          disabled={status !== "waiting"}
           id="transcription_prompt"
           placeholder="Inclua palavras-chaves mencionadas no vídeo separadas por vírgula (,)"
           className=" placeholder:opacity-40 h-20 leading-relaxed resize-none"
         />
       </div>
-      <Button type="submit" className="w-full">
-        Carregar vídeo
-        <Upload className="w-4 h-4 ml-2" />
+      <Button
+        data-success={status === "success"}
+        disabled={status !== "waiting"}
+        type="submit"
+        className="w-full data-[success=true]:bg-emerald-400"
+      >
+        {status === "waiting" ? (
+          <>
+            Carregar video
+            <Upload className="w-4 h-4 ml-2" />
+          </>
+        ) : (
+          statusMessages[status]
+        )}
       </Button>
     </form>
   );
