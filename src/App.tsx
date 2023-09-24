@@ -21,7 +21,7 @@ export function App() {
     completion,
     isLoading,
   } = useCompletion({
-    api: "http://localhost:3333/ai/generate",
+    api: `${process.env.API_URI}/ai/generate`,
     body: {
       videoId,
       temperature,
