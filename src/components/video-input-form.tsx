@@ -17,7 +17,11 @@ const statusMessages = {
   success: "Sucesso!",
 };
 
-export function VideoInputForm() {
+interface VideoInputFormProps {
+  onVideoUploaded: (id: string) => void;
+}
+
+export function VideoInputForm({ onVideoUploaded }: VideoInputFormProps) {
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [status, setStatus] = useState<Status>("waiting");
   const promptInputRef = useRef<HTMLTextAreaElement>(null);
@@ -63,8 +67,6 @@ export function VideoInputForm() {
 
     const audioFileBlob = new Blob([data], { type: "audio/mp3" });
 
-    setStatus("converting");
-
     const audioFile = new File([audioFileBlob], "output.mp3", {
       type: "audio/mpeg",
     });
@@ -101,10 +103,7 @@ export function VideoInputForm() {
     await api.post(`/videos/${videoId}/transcription`, { prompt });
 
     setStatus("success");
-
-    setTimeout(() => {
-      setStatus("waiting");
-    }, 2000);
+    onVideoUploaded(videoId);
   }
 
   const previewUrl = useMemo(() => {
@@ -148,7 +147,7 @@ export function VideoInputForm() {
           ref={promptInputRef}
           disabled={status !== "waiting"}
           id="transcription_prompt"
-          placeholder="Inclua palavras-chaves mencionadas no vídeo separadas por vírgula (,)"
+          placeholder="Inclua palavras-chave mencionadas no vídeo separadas por vírgula (,)"
           className=" placeholder:opacity-40 h-20 leading-relaxed resize-none"
         />
       </div>
