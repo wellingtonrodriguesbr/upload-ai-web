@@ -21,7 +21,7 @@ export function App() {
     completion,
     isLoading,
   } = useCompletion({
-    api: `${process.env.API_URI}/ai/generate`,
+    api: `${import.meta.env.VITE_API_URI}/ai/generate`,
     body: {
       videoId,
       temperature,
