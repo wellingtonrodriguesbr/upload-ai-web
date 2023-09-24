@@ -37,7 +37,7 @@ export function App() {
         <h1 className="text-xl font-semibold">upload.ai</h1>
         <div className="flex items-center gap-3">
           <span className="text-sm text-muted-foreground">
-            Desenvolvido com ❤️ no NLW da Rocketseat
+            Desenvolvido com ❤️ por Wellington Rodrigues
           </span>
           <Separator orientation="vertical" className="h-6" />
           <Button variant="outline">
