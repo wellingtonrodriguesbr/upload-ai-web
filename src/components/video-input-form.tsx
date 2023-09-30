@@ -96,7 +96,11 @@ export function VideoInputForm({ onVideoUploaded }: VideoInputFormProps) {
       data: {
         video: { id: videoId },
       },
-    } = await api.post("/videos", data);
+    } = await api.post("/videos", data, {
+      headers: {
+        "Content-Type": "multipart/form-data; boundary=",
+      },
+    });
 
     setStatus("generating");
 
