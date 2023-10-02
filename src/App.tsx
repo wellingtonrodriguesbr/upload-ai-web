@@ -40,9 +40,15 @@ export function App() {
             Desenvolvido com ❤️ por Wellington Rodrigues
           </span>
           <Separator orientation="vertical" className="h-6" />
-          <Button variant="outline">
-            <Github className="w-4 h-4 mr-2" />
-            Github
+          <Button variant="outline" asChild>
+            <a
+              href="https://github.com/wellingtonrodriguesbr"
+              target="_blank"
+              className="flex items-center gap-2"
+            >
+              <Github className="w-4 h-4" />
+              Github
+            </a>
           </Button>
         </div>
       </div>
