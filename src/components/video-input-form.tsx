@@ -65,7 +65,7 @@ export function VideoInputForm({ onVideoUploaded }: VideoInputFormProps) {
 
     const data = await ffmpeg.readFile("output.mp3");
 
-    const audioFileBlob = new Blob([data], { type: "audio/mp3" });
+    const audioFileBlob = new Blob([data], { type: "audio/mpeg" });
 
     const audioFile = new File([audioFileBlob], "output.mp3", {
       type: "audio/mpeg",
@@ -104,7 +104,15 @@ export function VideoInputForm({ onVideoUploaded }: VideoInputFormProps) {
 
     setStatus("generating");
 
-    await api.post(`/videos/${videoId}/transcription`, { prompt });
+    await api.post(
+      `/videos/${videoId}/transcription`,
+      { prompt },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     setStatus("success");
     onVideoUploaded(videoId);
