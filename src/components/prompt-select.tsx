@@ -23,8 +23,10 @@ export function PromptSelect({ onPromptSelected }: PromptSelectProps) {
   const [prompts, setPrompts] = useState<Prompt[] | null>(null);
 
   async function getAllPrompts() {
-    const { data } = await api.get("/prompts");
-    setPrompts(data);
+    const {
+      data: { prompts },
+    } = await api.get("/prompts");
+    setPrompts(prompts);
   }
 
   function handlePromptSelected(promptId: string) {
