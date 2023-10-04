@@ -86,23 +86,21 @@ export function VideoInputForm({ onVideoUploaded }: VideoInputFormProps) {
     setStatus("converting");
 
     const audioFile = await convertVideoToAudio(videoFile);
-    const data = new FormData();
+    const formData = new FormData();
 
-    data.append("file", audioFile);
+    formData.append("file", audioFile);
 
     setStatus("uploading");
 
-    const {
-      data: {
-        video: { id: videoId },
-      },
-    } = await api.post("/videos", data, {
+    const { data } = await api.post("/videos", formData, {
       headers: {
         "Content-Type": "multipart/form-data; boundary=",
       },
     });
 
     setStatus("generating");
+
+    const videoId = data.video.id;
 
     await api.post(
       `/videos/${videoId}/transcription`,
